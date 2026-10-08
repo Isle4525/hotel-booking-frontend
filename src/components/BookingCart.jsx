@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './BookingCart.css';
+import '../styles/BookingCart.css';
 
 export default function BookingCart({
   isOpen,

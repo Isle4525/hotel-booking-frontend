@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Hero.css';
+import '../styles/Hero.css';
 
 export default function Hero() {
   const [destination, setDestination] = useState('');

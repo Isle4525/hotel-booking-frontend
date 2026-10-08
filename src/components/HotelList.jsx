@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import HotelCard from './HotelCard';
 import { hotelsData } from '../data/hotels';
-import './HotelList.css';
+import '../styles/HotelList.css';
 
 export default function HotelList({ onAddToCart, onBookHotel, cartItems = [] }) {
   const [activeCategory, setActiveCategory] = useState('All');

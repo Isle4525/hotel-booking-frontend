@@ -1,5 +1,5 @@
 import React from 'react';
-import './HotelCard.css';
+import '../styles/HotelCard.css';
 
 export default function HotelCard({
   hotel,

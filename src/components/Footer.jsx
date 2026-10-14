@@ -1,7 +1,15 @@
 import React from 'react';
 import '../styles/Footer.css';
+import { useNavigation } from '../context';
 
 export default function Footer() {
+  const { navigate } = useNavigation();
+
+  const handleLinkClick = (e, targetId) => {
+    e.preventDefault();
+    navigate('home', targetId);
+  };
+
   return (
     <footer className="footer" id="contact">
       <div className="footer-container">
@@ -15,20 +23,20 @@ export default function Footer() {
         <div className="footer-col">
           <h4>Navigation</h4>
           <ul className="footer-links">
-            <li><a href="#hero">Main</a></li>
-            <li><a href="#hotels">Hotels</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#hero" onClick={(e) => handleLinkClick(e, 'hero')}>Main</a></li>
+            <li><a href="#hotels" onClick={(e) => handleLinkClick(e, 'hotels')}>Hotels</a></li>
+            <li><a href="#services" onClick={(e) => handleLinkClick(e, 'services')}>Services</a></li>
+            <li><a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')}>Contact</a></li>
           </ul>
         </div>
 
         <div className="footer-col">
           <h4>Popular Cities</h4>
           <ul className="footer-links">
-            <li><a href="#hotels">Алматы</a></li>
-            <li><a href="#hotels">Астана</a></li>
-            <li><a href="#hotels">Актау</a></li>
-            <li><a href="#hotels">Бурабай (Боровое)</a></li>
+            <li><a href="#hotels" onClick={(e) => handleLinkClick(e, 'hotels')}>Алматы</a></li>
+            <li><a href="#hotels" onClick={(e) => handleLinkClick(e, 'hotels')}>Астана</a></li>
+            <li><a href="#hotels" onClick={(e) => handleLinkClick(e, 'hotels')}>Актау</a></li>
+            <li><a href="#hotels" onClick={(e) => handleLinkClick(e, 'hotels')}>Бурабай (Боровое)</a></li>
           </ul>
         </div>
 

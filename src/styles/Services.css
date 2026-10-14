@@ -2,7 +2,7 @@
    Services Section Component
    ========================================================================== */
 .services-section {
-  background: #f1f5f9;
+  background: var(--border-subtle);
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
 }
@@ -14,7 +14,7 @@
 }
 
 .service-card {
-  background: #ffffff;
+  background: var(--bg-card);
   padding: 2rem 1.5rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);

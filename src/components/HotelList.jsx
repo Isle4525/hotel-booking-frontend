@@ -1,24 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HotelCard from './HotelCard';
 import { hotelsData } from '../data/hotels';
 import '../styles/HotelList.css';
+import { useCart } from '../context';
 
-export default function HotelList({ onAddToCart, onBookHotel, cartItems = [] }) {
+export default function HotelList(props) {
+  const cart = useCart();
+  const onAddToCart = props.onAddToCart || cart.addToCart;
+  const onBookHotel = props.onBookHotel;
+  const cartItems = props.cartItems || cart.cartItems;
+
   const [activeCategory, setActiveCategory] = useState('All');
   const [bookingModalHotel, setBookingModalHotel] = useState(null);
   const [detailsModalHotel, setDetailsModalHotel] = useState(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
+  // 2. Поиск с Debounce — задержка 500 мс + setTimeout
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [isDebouncing, setIsDebouncing] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setIsDebouncing(false);
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
+
+  const handleSearchChange = (val) => {
+    setSearchTerm(val);
+    setIsDebouncing(Boolean(val));
+  };
+
+  const handleClearSearch = () => {
+    handleSearchChange('');
+    setDebouncedSearchTerm('');
+  };
+
+  // 3. События и Cleanup — Escape + очистка обработчика
+  useEffect(() => {
+    if (!bookingModalHotel && !detailsModalHotel) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setBookingModalHotel(null);
+        setDetailsModalHotel(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [bookingModalHotel, detailsModalHotel]);
+
   const getInCartCount = (hotelId) => {
-    const item = cartItems.find((it) => it.hotel.id === hotelId);
-    return item ? item.roomsCount : 0;
+    return cart.getInCartCount ? cart.getInCartCount(hotelId) : (cartItems.find((it) => it.hotel.id === hotelId)?.roomsCount || 0);
   };
 
   const categories = ['All', ...new Set(hotelsData.map((h) => h.category))];
 
-  const filteredHotels = activeCategory === 'All'
-    ? hotelsData
-    : hotelsData.filter((h) => h.category === activeCategory);
+  // Filtering by both Category and Debounced Search Term
+  const filteredHotels = hotelsData.filter((hotel) => {
+    const matchesCategory = activeCategory === 'All' || hotel.category === activeCategory;
+    if (!matchesCategory) return false;
+
+    if (!debouncedSearchTerm.trim()) return true;
+
+    const query = debouncedSearchTerm.toLowerCase().trim();
+    return (
+      hotel.name.toLowerCase().includes(query) ||
+      hotel.city.toLowerCase().includes(query) ||
+      hotel.description.toLowerCase().includes(query) ||
+      hotel.category.toLowerCase().includes(query) ||
+      (hotel.features && hotel.features.some((f) => f.toLowerCase().includes(query)))
+    );
+  });
 
   const handleCategoryClick = (cat) => {
     if (activeCategory === cat && cat !== 'All') {
@@ -55,6 +116,37 @@ export default function HotelList({ onAddToCart, onBookHotel, cartItems = [] }) 
         </p>
       </div>
 
+      {/* 2. Search Toolbar with 500ms Debounce */}
+      <div className="search-toolbar">
+        <div className="search-input-wrapper">
+          <span className="search-input-icon">🔍</span>
+          <input
+            type="text"
+            className="search-input-field"
+            placeholder="Search hotels by name, city or amenities (e.g. Almaty, Spa, Luxury)..."
+            value={searchTerm}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            aria-label="Search hotels"
+          />
+          {isDebouncing && (
+            <span className="debounce-indicator">
+              ⏳ Searching...
+            </span>
+          )}
+          {searchTerm && (
+            <button
+              type="button"
+              className="search-clear-btn"
+              onClick={handleClearSearch}
+              aria-label="Clear search"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Category Filter Buttons */}
       <div className="catalog-toolbar">
         <div className="category-filter-list" role="group" aria-label="Category filter">
@@ -78,14 +170,20 @@ export default function HotelList({ onAddToCart, onBookHotel, cartItems = [] }) 
           {activeCategory !== 'All' && (
             <span> in <strong>{activeCategory}</strong></span>
           )}
+          {debouncedSearchTerm && (
+            <span> matching "<strong>{debouncedSearchTerm}</strong>"</span>
+          )}
         </span>
-        {activeCategory !== 'All' && (
+        {(activeCategory !== 'All' || searchTerm) && (
           <button
             type="button"
             className="clear-filter-btn"
-            onClick={() => setActiveCategory('All')}
+            onClick={() => {
+              setActiveCategory('All');
+              handleClearSearch();
+            }}
           >
-            Show all ({hotelsData.length})
+            Reset all filters ({hotelsData.length})
           </button>
         )}
       </div>
@@ -106,11 +204,18 @@ export default function HotelList({ onAddToCart, onBookHotel, cartItems = [] }) 
         </div>
       ) : (
         <div className="no-hotels-found">
-          <p>No hotels found in this category.</p>
+          <p>
+            {debouncedSearchTerm
+              ? `No hotels found matching "${debouncedSearchTerm}".`
+              : 'No hotels found in this category.'}
+          </p>
           <button
             type="button"
             className="btn-primary"
-            onClick={() => setActiveCategory('All')}
+            onClick={() => {
+              setActiveCategory('All');
+              handleClearSearch();
+            }}
           >
             Show all hotels
           </button>

@@ -1,13 +1,15 @@
 import React from 'react';
 import '../styles/HotelCard.css';
+import { useCart } from '../context';
 
-export default function HotelCard({
-  hotel,
-  onBook,
-  onViewDetails,
-  onAddToCart,
-  inCartCount = 0
-}) {
+export default function HotelCard(props) {
+  const cart = useCart();
+
+  const hotel = props.hotel;
+  const onBook = props.onBook;
+  const onViewDetails = props.onViewDetails;
+  const onAddToCart = props.onAddToCart || cart.addToCart;
+  const inCartCount = props.inCartCount !== undefined ? props.inCartCount : cart.getInCartCount(hotel.id);
   return (
     <article className="hotel-card">
       {/* 1. Product Image with Badges */}

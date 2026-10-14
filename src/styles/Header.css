@@ -5,7 +5,7 @@
   position: sticky;
   top: 0;
   z-index: 200;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--header-bg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
@@ -14,7 +14,7 @@
 .header-container {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 1rem 1.5rem;
+  padding: 0.9rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,6 +29,7 @@
   align-items: center;
   gap: 0.4rem;
   letter-spacing: -0.5px;
+  cursor: pointer;
 }
 
 .nav {
@@ -37,16 +38,19 @@
   gap: 1.75rem;
 }
 
-.nav a {
+.nav a,
+.nav-link {
   text-decoration: none;
   color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 0.95rem;
+  font-weight: 600;
+  font-size: 0.92rem;
   transition: var(--transition);
   position: relative;
+  cursor: pointer;
 }
 
-.nav a:hover {
+.nav a:hover,
+.nav-link:hover {
   color: var(--primary);
 }
 
@@ -62,9 +66,9 @@
   gap: 0.45rem;
   background: #f1f5f9;
   border: 1px solid var(--border-color);
-  padding: 0.5rem 0.95rem;
+  padding: 0.45rem 0.9rem;
   border-radius: var(--radius-full);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-main);
   transition: var(--transition);
@@ -97,17 +101,111 @@
   line-height: 1;
 }
 
-.header-cta {
-  padding: 0.55rem 1.25rem;
+/* Auth Navigation Buttons (Guest) */
+.auth-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-nav-auth {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-full);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-nav-auth:hover,
+.btn-nav-auth.active {
+  background: #f1f5f9;
+  color: var(--primary);
+  border-color: rgba(29, 78, 216, 0.3);
+}
+
+.btn-nav-register {
+  padding: 0.45rem 1rem;
+  font-size: 0.86rem;
+  border-radius: var(--radius-full);
+}
+
+/* User Logged-In Block */
+.user-nav-block {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.user-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-full);
+  color: #166534;
+  font-size: 0.84rem;
+  font-weight: 700;
+  max-width: 170px;
+  cursor: default;
+}
+
+.user-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-avatar-icon {
   font-size: 0.9rem;
 }
 
-@media (max-width: 768px) {
-  .header-container {
-    padding: 0.85rem 1rem;
-  }
+.btn-logout {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
 
+.btn-logout:hover {
+  background: #fca5a5;
+  color: #991b1b;
+}
+
+@media (max-width: 860px) {
   .nav {
     display: none;
+  }
+}
+
+@media (max-width: 580px) {
+  .header-container {
+    padding: 0.75rem 1rem;
+  }
+
+  .user-profile-badge {
+    max-width: 105px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.78rem;
+  }
+
+  .btn-nav-auth {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .btn-nav-register {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
   }
 }

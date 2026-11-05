@@ -73,15 +73,10 @@ export default function BookingCart(props) {
 
   const handleBook = () => {
     if (activeItems.length === 0) return;
-
-    // Require demo user to log in before proceeding to checkout
-    if (!currentUser) {
-      setLoginRequired(true);
-      return;
+    onClose();
+    if (onNavigateToAuth) {
+      onNavigateToAuth('checkout');
     }
-
-    setLoginRequired(false);
-    setIsSuccess(true);
   };
 
   const handleResetSuccess = () => {
@@ -337,9 +332,7 @@ export default function BookingCart(props) {
               >
                 {activeItems.length === 0
                   ? 'Select hotels to calculate'
-                  : !currentUser
-                  ? `Log In & Book (${totalPrice.toLocaleString('ru-RU')} ₸)`
-                  : `Confirm Reservation (${totalPrice.toLocaleString('ru-RU')} ₸)`}
+                  : `Proceed to Checkout (${totalPrice.toLocaleString('ru-RU')} ₸) →`}
               </button>
             </div>
           </div>

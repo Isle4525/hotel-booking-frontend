@@ -6,6 +6,7 @@ import Header from './components/Header.jsx'
 import Hero from './components/Hero.jsx'
 import HotelList from './components/HotelList.jsx'
 import Login from './components/Login.jsx'
+import OrderCheckout from './components/OrderCheckout.jsx'
 import Register from './components/Register.jsx'
 import Services from './components/Services.jsx'
 
@@ -18,6 +19,7 @@ function MainContent() {
       <main>
         {currentPage === 'login' && <Login />}
         {currentPage === 'register' && <Register />}
+        {currentPage === 'checkout' && <OrderCheckout />}
         {currentPage === 'home' && (
           <>
             <Hero />

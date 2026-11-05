@@ -79,6 +79,16 @@ export default function Header(props) {
             Services
           </a>
           <a
+            href="#checkout"
+            className={`nav-link ${currentPage === 'checkout' ? 'active' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate('checkout');
+            }}
+          >
+            Checkout
+          </a>
+          <a
             href="#contact"
             className="nav-link"
             onClick={(e) => {

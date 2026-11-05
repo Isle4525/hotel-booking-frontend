@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavigationContext } from './NavigationContext.js';
 
 export function NavigationProvider({ children }) {
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'login' | 'register'
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'login' | 'register' | 'checkout'
 
   const navigate = (page, targetSectionId = null) => {
     setCurrentPage(page);
@@ -26,7 +26,8 @@ export function NavigationProvider({ children }) {
     navigate,
     isHome: currentPage === 'home',
     isLogin: currentPage === 'login',
-    isRegister: currentPage === 'register'
+    isRegister: currentPage === 'register',
+    isCheckout: currentPage === 'checkout'
   };
 
   return (

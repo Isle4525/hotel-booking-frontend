@@ -1,15 +1,21 @@
 import React from 'react';
 import '../styles/HotelCard.css';
 import { useCart } from '../context';
+import Countdown from './Countdown.jsx';
+import useNow from '../utils/useNow.js';
+import { getActiveDiscount, getFinalPrice } from '../utils/pricing.js';
 
 export default function HotelCard(props) {
   const cart = useCart();
+  const now = useNow();
 
   const hotel = props.hotel;
   const onBook = props.onBook;
   const onViewDetails = props.onViewDetails;
   const onAddToCart = props.onAddToCart || cart.addToCart;
   const inCartCount = props.inCartCount !== undefined ? props.inCartCount : cart.getInCartCount(hotel.id);
+  const discount = getActiveDiscount(hotel, now);
+  const finalPrice = getFinalPrice(hotel, now);
   return (
     <article className="hotel-card">
       {/* 1. Product Image with Badges */}
@@ -63,9 +69,12 @@ export default function HotelCard(props) {
           <div className="price-block">
             <span className="price-caption">Starting from</span>
             <div className="price-value-row">
-              <span className="price-amount">{hotel.price.toLocaleString('ru-RU')} ₸</span>
+              {discount && <span className="price-old">{hotel.price.toLocaleString('ru-RU')} ₸</span>}
+              {discount && <span className="price-discount">−{discount.percent}%</span>}
+              <span className="price-amount">{finalPrice.toLocaleString('ru-RU')} ₸</span>
               <span className="price-unit">/ night</span>
             </div>
+            {discount && <Countdown endsAt={discount.endsAt} />}
           </div>
 
           <div className="card-actions">

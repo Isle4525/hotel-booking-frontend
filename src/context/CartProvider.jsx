@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { CartContext } from './CartContext.js';
+import { getActiveDiscount, getFinalPrice } from '../utils/pricing.js';
 
 const CART_STORAGE_KEY = 'booker_cart_items';
 
@@ -14,6 +15,7 @@ export function CartProvider({ children }) {
     }
   });
   const [cartOpen, setCartOpen] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
 
   // 1. Загрузка и сохранение данных — useEffect + localStorage
   useEffect(() => {
@@ -23,6 +25,18 @@ export function CartProvider({ children }) {
       console.error('Failed to save cart items to localStorage', err);
     }
   }, [cartItems]);
+
+  useEffect(() => {
+    const nearestEnd = cartItems.reduce((nearest, item) => {
+      const discount = getActiveDiscount(item.hotel, now);
+      const end = discount ? new Date(discount.endsAt).getTime() : Infinity;
+      return Math.min(nearest, end);
+    }, Infinity);
+    if (!Number.isFinite(nearestEnd)) return undefined;
+    const delay = Math.min(2 ** 31 - 1, Math.max(0, nearestEnd - now + 50));
+    const timeout = setTimeout(() => setNow(Date.now()), delay);
+    return () => clearTimeout(timeout);
+  }, [cartItems, now]);
 
   const openCart = () => setCartOpen(true);
   const closeCart = () => setCartOpen(false);
@@ -71,10 +85,10 @@ export function CartProvider({ children }) {
   const totalPrice = useMemo(
     () =>
       activeItems.reduce(
-        (sum, it) => sum + it.hotel.price * (it.roomsCount || 1) * (it.nights || 1),
+        (sum, it) => sum + getFinalPrice(it.hotel, now) * (it.roomsCount || 1) * (it.nights || 1),
         0
       ),
-    [activeItems]
+    [activeItems, now]
   );
 
   const value = {

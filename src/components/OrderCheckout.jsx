@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/OrderCheckout.css';
 import { useAuth, useCart, useNavigation } from '../context';
+import { getActiveDiscount, getFinalPrice } from '../utils/pricing.js';
 
 export default function OrderCheckout(props) {
   const auth = useAuth();
@@ -15,10 +16,9 @@ export default function OrderCheckout(props) {
   // Active items selected in cart for calculation
   const activeItems = cartItems.filter((it) => it.selected !== false);
   const selectedItems = activeItems;
-  const currentTotal = selectedItems.reduce(
-    (sum, it) => sum + (it.hotel?.price || 0) * (it.roomsCount || 1) * (it.nights || 1),
-    0
-  );
+  const currentTotal = props.cartItems ? selectedItems.reduce(
+    (sum, it) => sum + getFinalPrice(it.hotel) * (it.roomsCount || 1) * (it.nights || 1), 0
+  ) : cart.totalPrice;
 
   // Controlled component state for all 11 form fields
   const [formData, setFormData] = useState({
@@ -214,7 +214,14 @@ export default function OrderCheckout(props) {
       city: formData.city.trim(),
       comment: formData.comment.trim(),
       paymentMethod: formData.paymentMethod === 'card' ? 'Bank card' : 'Cash on delivery',
-      items: selectedItems.map((item) => ({ ...item })),
+      items: selectedItems.map((item) => {
+        const discount = getActiveDiscount(item.hotel);
+        return {
+          ...item,
+          pricePerNight: getFinalPrice(item.hotel),
+          discountPercent: discount?.percent || 0
+        };
+      }),
       totalAmount: currentTotal
     };
 
@@ -357,7 +364,7 @@ export default function OrderCheckout(props) {
                   {submittedOrder.items.map((item) => {
                     const rooms = item.roomsCount || 1;
                     const nights = item.nights || 1;
-                    const itemSubtotal = (item.hotel?.price || 0) * rooms * nights;
+                    const itemSubtotal = item.pricePerNight * rooms * nights;
 
                     return (
                       <div key={item.hotel?.id} className="order-product-card">
@@ -375,7 +382,8 @@ export default function OrderCheckout(props) {
                         </div>
                         <div className="order-product-price-block">
                           <span className="order-product-rate">
-                            {(item.hotel?.price || 0).toLocaleString('ru-RU')} ₸ / night
+                            {item.pricePerNight.toLocaleString('ru-RU')} ₸ / night
+                            {item.discountPercent > 0 && <span> (−{item.discountPercent}%)</span>}
                           </span>
                           <strong className="order-product-subtotal">
                             {itemSubtotal.toLocaleString('ru-RU')} ₸

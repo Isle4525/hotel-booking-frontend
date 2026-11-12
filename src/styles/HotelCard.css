@@ -212,6 +212,10 @@
   color: var(--text-muted);
 }
 
+.price-old { color: var(--text-muted); font-size: 0.85rem; text-decoration: line-through; }
+.price-discount { color: var(--text-main); background: var(--accent); border-radius: var(--radius-full); padding: 0.1rem 0.4rem; font-size: 0.72rem; font-weight: 800; white-space: nowrap; }
+.discount-countdown { color: var(--text-muted); font-size: 0.75rem; font-variant-numeric: tabular-nums; margin-top: 0.2rem; }
+
 .card-actions {
   display: flex;
   gap: 0.4rem;

@@ -3,8 +3,11 @@ import HotelCard from './HotelCard';
 import { hotelsData } from '../data/hotels';
 import '../styles/HotelList.css';
 import { useCart } from '../context';
+import useNow from '../utils/useNow.js';
+import { getFinalPrice } from '../utils/pricing.js';
 
 export default function HotelList(props) {
+  const now = useNow();
   const cart = useCart();
   const onAddToCart = props.onAddToCart || cart.addToCart;
   const onBookHotel = props.onBookHotel;
@@ -257,7 +260,7 @@ export default function HotelList(props) {
                   <p className="modal-location">📍 {bookingModalHotel.city}</p>
                   <div className="modal-price-row">
                     <span>Rate per night:</span>
-                    <strong>{bookingModalHotel.price.toLocaleString('ru-RU')} ₸</strong>
+                    <strong>{getFinalPrice(bookingModalHotel, now).toLocaleString('ru-RU')} ₸</strong>
                   </div>
                   <div className="modal-features">
                     {bookingModalHotel.features.map((f, i) => (
@@ -323,7 +326,7 @@ export default function HotelList(props) {
               </div>
               <div className="modal-price-row highlight">
                 <span>Total per night:</span>
-                <strong>{detailsModalHotel.price.toLocaleString('ru-RU')} ₸</strong>
+                <strong>{getFinalPrice(detailsModalHotel, now).toLocaleString('ru-RU')} ₸</strong>
               </div>
             </div>
             <div className="modal-actions">

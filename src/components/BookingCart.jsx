@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/BookingCart.css';
 import { useAuth, useCart, useNavigation } from '../context';
+import { getFinalPrice } from '../utils/pricing.js';
 
 export default function BookingCart(props) {
   const auth = useAuth();
@@ -67,7 +68,7 @@ export default function BookingCart(props) {
   const activeItems = cartItems.filter((it) => it.selected !== false);
   const totalRooms = activeItems.reduce((sum, it) => sum + (it.roomsCount || 1), 0);
   const totalPrice = activeItems.reduce(
-    (sum, it) => sum + it.hotel.price * (it.roomsCount || 1) * (it.nights || 1),
+    (sum, it) => sum + getFinalPrice(it.hotel) * (it.roomsCount || 1) * (it.nights || 1),
     0
   );
 
@@ -168,7 +169,8 @@ export default function BookingCart(props) {
                 const isSelected = item.selected !== false;
                 const rooms = item.roomsCount || 1;
                 const nights = item.nights || 1;
-                const itemTotal = item.hotel.price * rooms * nights;
+                const itemPrice = getFinalPrice(item.hotel);
+                const itemTotal = itemPrice * rooms * nights;
 
                 return (
                   <div
@@ -193,7 +195,8 @@ export default function BookingCart(props) {
                         <h4 className="cart-item-title">{item.hotel.name}</h4>
                         <span className="cart-item-city">📍 {item.hotel.city}</span>
                         <div className="cart-item-base-price">
-                          <strong>{item.hotel.price.toLocaleString('ru-RU')} ₸</strong> / night
+                          {itemPrice !== item.hotel.price && <s>{item.hotel.price.toLocaleString('ru-RU')} ₸ </s>}
+                          <strong>{itemPrice.toLocaleString('ru-RU')} ₸</strong> / night
                         </div>
                       </div>
                       <button
